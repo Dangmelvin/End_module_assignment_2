@@ -1,8 +1,15 @@
 import socket
 import pickle
 from cryptography.fernet import Fernet
+import os
 
-from utils import get_key_from_file
+def get_key_from_file(filename="GroupB.key"):
+    if not os.path.exists(filename):
+        raise Exception(f"{filename} file not found")
+
+    with open(filename, "rb") as key_file:
+        _key = key_file.read()
+    return _key
 
 # Generate a key for Fernet encryption
 key = get_key_from_file()
@@ -16,7 +23,7 @@ def encrypt_file(file_path):
 
 def send_data_to_server(data, filename):
     HOST = '127.0.0.1'
-    PORT = 12345
+    PORT = 6868
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((HOST, PORT))
