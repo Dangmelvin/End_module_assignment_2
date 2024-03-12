@@ -10,6 +10,10 @@ def decrypt_file(encrypted_data):
     decrypted_data = cipher.decrypt(encrypted_data)
     return decrypted_data
 
+def save_data(data, filename):
+    with open(filename, "wb") as f:
+        pickle.dump(data, f)
+
 def handle_client(conn, addr, save_to_file=False):
     print(f"Connection from {addr} has been established.")
     
@@ -26,7 +30,7 @@ def handle_client(conn, addr, save_to_file=False):
         encrypted_data += chunk
     
     decrypted_data = decrypt_file(encrypted_data)
-    with open("received_file_decrypted.txt", 'wb') as f:
+    with open("GroupB_sample_textfile.txt", "wb") as f:
         f.write(decrypted_data)
     
     if save_to_file:
@@ -38,7 +42,7 @@ def handle_client(conn, addr, save_to_file=False):
 
 def start_server(save_to_file=False):
     HOST = '127.0.0.1'
-    PORT = 6688
+    PORT = 12345
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((HOST, PORT))
