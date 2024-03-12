@@ -1,8 +1,19 @@
 import socket
 import pickle
 from cryptography.fernet import Fernet
+import os
 
-from utils import generate_key_and_save_to_file
+def generate_key_and_save_to_file(filename="GroupB.key"):
+    # check key exist before generating
+    if os.path.exists(filename):
+        with open(filename, "rb") as key_file:
+            _key = key_file.read()
+        return _key
+
+    _key = Fernet.generate_key()
+    with open(filename, "wb") as key_file:
+        key_file.write(_key)
+    return _key
 
 # Generate a key for Fernet encryption
 key = generate_key_and_save_to_file()
@@ -32,7 +43,7 @@ def handle_client(conn, addr, save_to_file=False):
         encrypted_data += chunk
     
     decrypted_data = decrypt_file(encrypted_data)
-    with open("GroupB_sample_textfile.txt", "wb") as f:
+    with open("GroupB_sample_textfile_Decryp.txt", "wb") as f:
         f.write(decrypted_data)
     
     if save_to_file:
@@ -44,7 +55,7 @@ def handle_client(conn, addr, save_to_file=False):
 
 def start_server(save_to_file=False):
     HOST = '127.0.0.1'
-    PORT = 12345
+    PORT = 6868
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((HOST, PORT))
