@@ -2,8 +2,10 @@ import socket
 import pickle
 from cryptography.fernet import Fernet
 
+from utils import get_key_from_file
+
 # Generate a key for Fernet encryption
-key = Fernet.generate_key()
+key = get_key_from_file()
 cipher = Fernet(key)
 
 def encrypt_file(file_path):
@@ -34,7 +36,7 @@ def main():
     data = {'key1': 'Aljunaydi', 'Azmi': 'Dong', 'Thomas': 'Adhir'}
 
     # Sample text file to be encrypted
-    with open("GroupB_sample_textfile.txt", "wb") as f:
+    with open("GroupB_sample_textfile.txt", "w") as f:
         f.write("We are doing the End_module Assignment for week 8 including Aljunaydi, Azmi Chahal, Dang Dong, Thomas Lundie, Adhir Soechit.")
 
     send_data_to_server(data, "GroupB_sample_textfile.txt")

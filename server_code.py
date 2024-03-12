@@ -2,8 +2,10 @@ import socket
 import pickle
 from cryptography.fernet import Fernet
 
+from utils import generate_key_and_save_to_file
+
 # Generate a key for Fernet encryption
-key = Fernet.generate_key()
+key = generate_key_and_save_to_file()
 cipher = Fernet(key)
 
 def decrypt_file(encrypted_data):
