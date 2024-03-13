@@ -20,8 +20,6 @@ This project implements a client-server network where the client can send dictio
                  | ----------------------------> |
                  |                               |
                  |                               |
-                 |                               |
-                 |                               |
                  |        Receive pickled data   |
                  | <---------------------------- |
                  |                               |
@@ -30,8 +28,7 @@ This project implements a client-server network where the client can send dictio
                  |                               |
                  |     Save decrypted file       |
                  |                               |
-                 |                               |
-                 |                               |
+               
 
 
 ### Unit test
