@@ -1,7 +1,7 @@
 ### End_Module_Assignment_Group B
 ### Members: Aljunaydi, Azmi Chahal, Dang Dong, Thomas Lundie, Adhir Soechit
 ### Overview
-This project implements a client-server network where the client can send dictionary data or text files to the server. The client can specify the pickling format for dictionary data and also choose to encrypt files before sending.
+#### This project implements a client-server network where the client can send dictionary data or text files to the server. The client can specify the pickling format for dictionary data and also choose to encrypt files before sending.
 
 #### -  build a simple Client and server network. The client and server should be on same machine local host
 #### - Create a dictionary, populate it, serialize it and send it to server. With dictionary, please use pickling format to a binary. 
