@@ -5,7 +5,7 @@
 #### This project implements a client-server network where the client can send dictionary data or text files to the server. The client can specify the pickling format for dictionary data and also choose to encrypt files before sending.
 
 #### -  build a simple Client and server network. The client and server on same machine local host
-#### - Create a dictionary, populate it, serialize it and send it to server. With dictionary, use pickling format to a binary. 
+#### - Create a dictionary, populate it, serialize it and send it to server. With dictionary, use pickling format to a binary/Json/XML. 
 #### - Create a text file and send it to server. Also, the text contents will be encrypted in the text file
 #### - The server will have a configurable option to print the content to the screen or to be a file
 
