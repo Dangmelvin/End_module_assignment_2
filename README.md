@@ -28,7 +28,11 @@ This project implements a client-server network where the client can send dictio
                  |                               |
                  |     Save decrypted file       |
                  |                               |
-               
+##### Both the client and the server run on the same localhost.
+##### The client encrypts the data and sends it over a socket connection to the server.
+##### The server receives the serialized dictionary, decrypts it, and processes it.
+##### The server receives the encrypted data, decrypts it, and processes it.
+##### IP/port communication is established between the client and the server using sockets.               
 
 
 ### Unit test
