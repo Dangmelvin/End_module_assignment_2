@@ -46,11 +46,11 @@ Distributed under the MIT License. See LICENSE.txt for more information.
 #### Running the Server:
 ##### Open a terminal or command prompt.
 ##### Navigate to the directory containing server.py.
-##### Run the command: python server.py
+##### Run the command: python Server_Code.py
 ##### The server will start listening for incoming connections on the specified host and port as above architectre
 
 #### Running the Client:
 ##### Open another terminal or command prompt.
 ##### Navigate to the directory containing client.py.
-##### Run the command: python client.py
+##### Run the command: python Client_code.py
 ##### The client will connect to the server and send dictionary data and files
