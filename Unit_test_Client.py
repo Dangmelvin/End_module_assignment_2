@@ -2,8 +2,8 @@ import unittest
 import pickle
 import socket
 import threading
-from End_module_assignment_final.Client_code import send_data_to_server
-from End_module_assignment_final.Server_code import decrypt_file, save_data
+from Client_code import send_data_to_server
+from Server_code import decrypt_file, save_data
 
 class TestClient(unittest.TestCase):
     def setUp(self):
@@ -19,7 +19,7 @@ class TestClient(unittest.TestCase):
     def test_send_data_to_server(self):
         # Test data
         data = {'key1': 'Aljunaydi', 'Azmi': 'Dong', 'Thomas': 'Adhir'}
-        file_path = "test_textfile.txt"
+        file_path = "GroupB_sample_textfile.txt"
         with open(file_path, "w") as f:
             f.write("Test data for encryption")
 
@@ -73,7 +73,7 @@ def handle_client(conn, addr, save_to_file=False):
     
     if save_to_file:
         save_data(received_dict, "received_data.pkl")
-        with open("received_textfile.txt", "wb") as f:
+        with open("GroupB_sample_textfile.txt", "wb") as f:
             f.write(decrypted_data)
     
     conn.sendall(b'Data and file received successfully.')
@@ -81,7 +81,7 @@ def handle_client(conn, addr, save_to_file=False):
 def read_received_data():
     with open("received_data.pkl", "rb") as f:
         received_data = pickle.load(f)
-    with open("received_textfile.txt", "rb") as f:
+    with open("GroupB_sample_textfile.txt", "rb") as f:
         received_file = f.read()
     return received_data, received_file
 
