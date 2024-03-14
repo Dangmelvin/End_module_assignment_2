@@ -1,5 +1,7 @@
 import socket
 import pickle
+import json
+import xml.etree.ElementTree as ET
 from cryptography.fernet import Fernet
 import os
 
@@ -27,12 +29,28 @@ def save_data(data, filename):
     with open(filename, "wb") as f:
         pickle.dump(data, f)
 
-def handle_client(conn, addr, save_to_file=False):
+def handle_client(conn, addr, pickling_format, save_to_file=False):
     print(f"Connection from {addr} has been established.")
     
-    # Receive pickled dictionary
-    data = conn.recv(4096)
-    received_dict = pickle.loads(data)
+    # Receive pickled data based on selected format
+    data = b''
+    while True:
+        chunk = conn.recv(4096)
+        if not chunk:
+            break
+        data += chunk
+    
+    if pickling_format == "binary":
+        received_dict = pickle.loads(data)
+    elif pickling_format == "json":
+        received_dict = json.loads(data.decode('utf-8'))
+    elif pickling_format == "xml":
+        root = ET.fromstring(data)
+        received_dict = {}
+        for child in root:
+            received_dict[child.tag] = child.text
+    else:
+        raise ValueError("Invalid pickling format")
     
     # Receive and decrypt text file
     encrypted_data = b''
@@ -53,7 +71,7 @@ def handle_client(conn, addr, save_to_file=False):
 
     conn.close()
 
-def start_server(save_to_file=False):
+def start_server(pickling_format, save_to_file=False):
     HOST = '127.0.0.1'
     PORT = 6868
 
@@ -65,7 +83,8 @@ def start_server(save_to_file=False):
 
     while True:
         conn, addr = server.accept()
-        handle_client(conn, addr, save_to_file)
+        handle_client(conn, addr, pickling_format, save_to_file)
 
 if __name__ == "__main__":
-    start_server(save_to_file=True)  # Set save_to_file to True if you want to save received data to a file
+    pickling_format = "json"  # Change this to "binary", "json", or "xml" as desired
+    start_server(pickling_format, save_to_file=True)  # Set save_to_file to True if you want to save received data to a file
