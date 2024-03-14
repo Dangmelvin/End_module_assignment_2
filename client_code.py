@@ -1,53 +1,78 @@
 import socket
+import json
 import pickle
-from cryptography.fernet import Fernet
-import os
+import xml.etree.ElementTree as ET
 
-def get_key_from_file(filename="GroupB.key"):
-    if not os.path.exists(filename):
-        raise Exception(f"{filename} file not found")
+messages = ["Hello", "GroupB!"]
+message_count = len(messages)
 
-    with open(filename, "rb") as key_file:
-        _key = key_file.read()
-    return _key
+class ClientSession():
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host = "127.0.0.1"
+        port = 6868
+        self.sock.connect((host,port))
+    
+    def _send_raw(self, data_type, serialize_format, payload):
+        # First payload must contain the meta_byte
+        if data_type == "text":
+            data_type_int = 0
+        elif data_type == "dictionary":
+            data_type_int = 1
 
-# Generate a key for Fernet encryption
-key = get_key_from_file()
-cipher = Fernet(key)
+        if serialize_format == "plaintext":
+            serialize_format_int = 0
+        elif serialize_format == "binary":
+            serialize_format_int = 1
+        elif serialize_format == "json":
+            serialize_format_int = 2
+        elif serialize_format == "xml":
+            serialize_format_int = 3
 
-def encrypt_file(file_path):
-    with open(file_path, "rb") as f:
-        plaintext = f.read()
-        encrypted_data = cipher.encrypt(plaintext)
-    return encrypted_data
+        meta_int = data_type_int << 5 | serialize_format_int << 2
+        meta_byte = meta_int.to_bytes(1, "big")
 
-def send_data_to_server(data, filename):
-    HOST = '127.0.0.1'
-    PORT = 6868
+        payload_steps = range(0,len(payload),65535)
+        final_step = len(payload_steps) - 1
+        init = 1
+        final = 0
+        for i, chunk_slice in enumerate(payload_steps):
+            if i == final_step:
+                final = 1
+            packet_bytes = (0 << 4 | init << 3 | final << 2).to_bytes(1, "big")
 
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((HOST, PORT))
+            if i == 0:
+                packet_bytes += meta_byte
+                init = 0
+            chunk = payload[chunk_slice:chunk_slice + 65535]
 
-    # Send pickled dictionary
-    pickled_data = pickle.dumps(data)
-    client.sendall(pickled_data)
+            packet_bytes += len(chunk).to_bytes(2, "big")
+            packet_bytes += chunk
+            self.sock.send(packet_bytes)
 
-    # Encrypt and send text file
-    encrypted_data = encrypt_file(filename)
-    client.sendall(encrypted_data)
+    def serialize_dict(self, data, format):
+        if format == 'binary':
+            return pickle.dumps(data)
+        elif format == 'json':
+            return json.dumps(data).encode('utf-8')
+        elif format == 'xml':
+            root = ET.Element('root')
+            for key, value in data.items():
+                child = ET.Element(key)
+                child.text = str(value)
+                root.append(child)
+            return ET.tostring(root)
 
-    client.close()
+    def send_dictionary(self, dic, encoding):
+        payload = self.serialize_dict(dic, encoding)
+        self._send_raw("dictionary", encoding, payload)
+    
+    def send_text(self, msg):
+        if not isinstance(msg, (bytes, bytearray)):
+            msg = msg.encode("utf-8")
+        self._send_raw("text", "plaintext", msg)
 
-def main():
-    # Sample dictionary
-    data = {'key1': 'Aljunaydi', 'Azmi': 'Dong', 'Thomas': 'Adhir'}
-
-    # Sample text file to be encrypted
-    with open("GroupB_sample_textfile.txt", "w") as f:
-        f.write("We are doing the End_module Assignment for week 8 including Aljunaydi, Azmi Chahal, Dang Dong, Thomas Lundie, Adhir Soechit.")
-
-    send_data_to_server(data, "GroupB_sample_textfile.txt")
-    print("Data and file sent to server successfully.")
-
-if __name__ == "__main__":
-    main()
+client = ClientSession()
+#client.send_text("Hello")
+#client.send_text("World")
+client.send_dictionary({"Hello": "World"}, "json")
